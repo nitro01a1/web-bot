@@ -3,326 +3,646 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>به ربات ما خوش آمدید</title>
+    <title data-lang="page_title">به ربات ما خوش آمدید</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
 
     <style>
-        /* --- تعریف متغیرهای رنگی برای تم‌ها --- */
         :root {
-            --bg-color: #f5f7fa;
-            --card-bg-color: #ffffff;
-            --primary-text-color: #1d2d44;
-            --secondary-text-color: #5a6a85;
+            --card-bg-color: rgba(255, 255, 255, 0.45);
+            --primary-text-color: #0d1a2e;
+            --secondary-text-color: #3a4c6e;
             --accent-color: #007aff;
-            --accent-glow: rgba(0, 122, 255, 0.2);
-            --border-color: #e2e8f0;
-            --shadow-color: rgba(0, 0, 0, 0.05);
-            --toggle-bg: #e9ecef;
+            --accent-glow: rgba(0, 122, 255, 0.3);
+            --border-color: rgba(255, 255, 255, 0.7);
+            --shadow-color: rgba(0, 0, 0, 0.07);
+            --toggle-bg: rgba(208, 217, 230, 0.7);
             --toggle-fg: #ffffff;
+            --spotlight-color: rgba(255, 255, 255, 0.05);
         }
 
         body.dark-mode {
-            --bg-color: #121212;
-            --card-bg-color: #1e1e1e;
-            --primary-text-color: #e0e0e0;
-            --secondary-text-color: #a0a0a0;
+            --card-bg-color: rgba(20, 30, 40, 0.55);
+            --primary-text-color: #e8eff5;
+            --secondary-text-color: #b0c1d1;
             --accent-color: #0af;
-            --accent-glow: rgba(0, 170, 255, 0.2);
-            --border-color: #2c2c2c;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --toggle-bg: #333;
-            --toggle-fg: #121212;
+            --accent-glow: rgba(0, 170, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.25);
+            --toggle-bg: rgba(44, 62, 80, 0.7);
+            --toggle-fg: #1a2833;
+            --spotlight-color: rgba(255, 255, 255, 0.08);
         }
 
-        /* --- استایل کلی و انیمیشن تغییر تم --- */
-        * {
-            box-sizing: border-box;
-            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
-        }
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Vazirmatn', sans-serif;
-            background-color: var(--bg-color);
+            background-color: #0d1117;
             color: var(--primary-text-color);
             margin: 0;
-            padding: 80px 20px 20px 20px;
+            padding: 90px 20px 20px 20px;
+            transition: color 0.5s ease, background-color 0.5s ease;
+            overflow-x: hidden;
+            background-image: radial-gradient( circle at var(--x, 50%) var(--y, 50%), var(--spotlight-color) 0%, transparent 25% );
         }
+        
+        #tsparticles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
 
-        /* --- هدر ثابت و سوییچ تغییر تم --- */
         .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 15px 20px;
-            background-color: var(--card-bg-color);
+            position: fixed; top: 0; left: 0; right: 0; padding: 10px 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 2px 10px var(--shadow-color);
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            z-index: 1000; display: flex; justify-content: space-between; align-items: center;
+            transition: background-color 0.4s ease;
         }
+        body.dark-mode .header { background-color: rgba(0, 0, 0, 0.1); }
 
-        .theme-switch-wrapper {
-            display: flex;
-            align-items: center;
-        }
+        .controls-container { display: flex; align-items: center; gap: 20px; }
+        .theme-switch-container { display: flex; align-items: center; gap: 10px; }
+        .theme-switch-label { font-size: 0.9rem; color: var(--secondary-text-color); font-weight: 500; }
+        .theme-switch { display: inline-block; height: 28px; position: relative; width: 50px; }
+        .theme-switch input { display:none; }
+        .slider { background-color: var(--toggle-bg); bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; border-radius: 28px; }
+        .slider:before { background-color: var(--toggle-fg); bottom: 4px; content: ""; height: 20px; left: 4px; position: absolute; transition: .4s; width: 20px; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: var(--accent-color); }
+        input:checked + .slider:before { transform: translateX(22px); }
         
-        .theme-switch {
-            display: inline-block;
-            height: 28px;
-            position: relative;
-            width: 50px;
-        }
-
-        .theme-switch input {
-            display:none;
-        }
-
-        .slider {
-            background-color: var(--toggle-bg);
-            bottom: 0;
-            cursor: pointer;
-            left: 0;
-            position: absolute;
-            right: 0;
-            top: 0;
-            transition: .4s;
-            border-radius: 28px;
-        }
-
-        .slider:before {
-            background-color: var(--toggle-fg);
-            bottom: 4px;
-            content: "";
-            height: 20px;
-            left: 4px;
-            position: absolute;
-            transition: .4s;
-            width: 20px;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: var(--accent-color);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(22px);
-        }
-        
-        /* --- استایل اصلی محتوا و کارت‌ها --- */
-        main {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .hero {
-            text-align: center;
-            padding: 20px 0;
-            margin-bottom: 30px;
-        }
-
-        .hero h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
+        #lang-switcher {
+            background-color: var(--card-bg-color);
             color: var(--primary-text-color);
-            margin: 0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
         }
+        
+        main { max-width: 800px; margin: 0 auto; position: relative; z-index: 1; }
+        .hero h1 { font-size: 2.5rem; font-weight: 800; color: var(--primary-text-color); margin: 0; text-shadow: 0 0 15px var(--shadow-color); text-align: center; padding: 20px 0; margin-bottom: 30px;}
 
         .card {
             background-color: var(--card-bg-color);
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 25px;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px; padding: 30px; margin-bottom: 25px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 8px 30px var(--shadow-color);
+            box-shadow: 0 10px 40px var(--shadow-color);
         }
         
-        h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--accent-color);
-            margin-top: 0;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--accent-color);
-            box-shadow: 0 4px 10px var(--accent-glow);
-        }
+        h2 { font-size: 1.9rem; font-weight: 700; color: var(--accent-color); margin-top: 0; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid; text-shadow: 0 0 10px var(--accent-glow); }
+        p, li { font-size: 1rem; line-height: 1.9; color: var(--secondary-text-color); font-weight: 400; }
+        ul { padding-right: 20px; list-style-type: '✓  '; }
+        html[dir="ltr"] ul { padding-right: 0; padding-left: 20px; list-style-type: '✓  '; }
+        li { padding-bottom: 10px; }
+        .note { background-color: rgba(255, 165, 0, 0.1); border-right: 4px solid orange; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        html[dir="ltr"] .note { border-right: none; border-left: 4px solid orange; }
+        .note p { color: var(--primary-text-color); font-weight: 500;}
 
-        p, li {
-            font-size: 1rem;
-            line-height: 1.9;
-            color: var(--secondary-text-color);
-            font-weight: 400;
-        }
-
-        ul {
-            padding-right: 20px;
-            list-style-type: '✓  ';
-        }
-
-        li {
-            padding-bottom: 10px;
-        }
-
-        .note {
-            background-color: rgba(255, 165, 0, 0.1);
-            border-right: 4px solid orange;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
+        .price-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; text-align: center; }
+        .price-item { padding: 20px; background-color: rgba(0,0,0,0.05); border: 1px solid var(--border-color); border-radius: 12px; }
+        body.dark-mode .price-item { background-color: rgba(255,255,255,0.05); }
+        .price-item strong { display: block; margin-bottom: 5px; font-size: 1.1rem; color: var(--primary-text-color); }
         
-        .note p {
-            color: var(--primary-text-color);
-        }
-
-        .price-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            text-align: center;
-        }
-
-        .price-item {
-            padding: 20px;
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-        }
-        .price-item strong {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 1.1rem;
-            color: var(--primary-text-color);
-        }
-
+        .id-list { list-style-type: none; padding: 0; }
+        .id-list li { display: flex; justify-content: space-between; align-items: center; padding: 12px 5px; border-bottom: 1px dashed var(--border-color); }
+        .id-list li:last-child { border-bottom: none; }
+        .id-list a { color: var(--accent-color); text-decoration: none; font-weight: 500; }
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body>
+<body class="dark-mode">
     
+    <div id="tsparticles"></div>
+
     <header class="header">
-        <h3 style="margin: 0; font-weight: 500; color: var(--secondary-text-color);">توضیحات ربات</h3>
-        <div class="theme-switch-wrapper">
-            <label class="theme-switch" for="checkbox">
-                <input type="checkbox" id="checkbox" />
-                <div class="slider round"></div>
-            </label>
+        <select id="lang-switcher">
+            <option value="fa">فارسی</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="ru">Русский</option>
+            <option value="hi">हिन्दी</option>
+            <option value="ar">العربية</option>
+        </select>
+        <div class="theme-switch-container">
+            <span class="theme-switch-label">Change Theme</span>
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" checked />
+                    <div class="slider round"></div>
+                </label>
+            </div>
         </div>
     </header>
 
     <main>
-        <section class="hero" data-aos="zoom-in">
-            <h1> سلام، به مینی اپ ربات ما خوش اومدی لینک ربات @x7likestar_bot✨</h1>
+        <section class="hero" data-aos="fade-down">
+            <h1 data-lang="hero_title"></h1>
         </section>
 
         <section class="card" data-aos="fade-up">
-            <h2>📄 توضیحات درباره ی ربات ما</h2>
-            <p>در این صفحه می‌توانید با تمام قابلیت‌ها، سیستم‌ها و قوانین ربات ما به طور کامل آشنا شوید.</p>
+            <h2 data-lang="about_title"></h2>
+            <p data-lang="about_desc"></p>
         </section>
 
         <section class="card" data-aos="fade-left">
-            <h2>🤝 سیستم رفرال</h2>
+            <h2 data-lang="referral_title"></h2>
             <ul>
-                <li>در ربات ما به ازای هر رفرال به شما 2 امتیاز افزوده میشود.</li>
-                <li>به ازای هر رفرالی که رفرالتون بگیره 1 امتیاز به شما افزوده میشود.</li>
-                <li>به ازای هر گیفتی که رفرالتون سفارش بده به شما 1 امتیاز افزوده میشود.</li>
-                <li>به ازای هر ده روزی که رفرالتون از چنلای جوین اجباری لفت نده به شما 1 امتیاز افزوده میشود.</li>
+                <li data-lang="referral_1"></li>
+                <li data-lang="referral_2"></li>
+                <li data-lang="referral_3"></li>
+                <li data-lang="referral_4"></li>
             </ul>
             <div class="note">
-                <p><strong>نکته:</strong> اگر رفرالتون از چنلای جوین اجباری لفت بده از شما 1 امتیاز کسر میشود. شما میتوانید لینک رفرال اختصاصی خود را از بخش /profile در منوی ربات بدست اورید.</p>
+                <p><strong data-lang="note_title"></strong> <span data-lang="referral_note"></span></p>
+            </div>
+        </section>
+        
+        <section class="card" data-aos="fade-right">
+            <h2 data-lang="daily_title"></h2>
+            <p data-lang="daily_desc"></p>
+        </section>
+        
+        <section class="card" data-aos="fade-up">
+            <h2 data-lang="bet_title"></h2>
+            <p data-lang="bet_desc"></p>
+            <ul>
+                <li><strong data-lang="bet_1_title"></strong> <span data-lang="bet_1_desc"></span></li>
+                <li><strong data-lang="bet_2_title"></strong> <span data-lang="bet_2_desc"></span></li>
+            </ul>
+        </section>
+        
+        <section class="card" data-aos="fade-left">
+            <h2 data-lang="transfer_title"></h2>
+            <p data-lang="transfer_desc"></p>
+            <div class="note">
+                <p><strong data-lang="note_title"></strong> <span data-lang="transfer_note"></span></p>
             </div>
         </section>
 
         <section class="card" data-aos="fade-right">
-            <h2>🎁 سیستم امتیاز روزانه</h2>
-            <p>شما هر روز میتوانید یکبار از امتیاز روزانه استفاده کنید که به شما به طور اتفاقی بین 1 تا 5 امتیاز میدهد.</p>
-        </section>
-        
-        <section class="card" data-aos="fade-up">
-            <h2>🎲 سیستم شرط بندی</h2>
-            <p>برای باز کردن دائمی سیستم شرط بندی باید 15 امتیاز بپردازید.</p>
-            <ul>
-                <li><strong>سیستم زوج یا فرد:</strong> تعیین می‌کنید عدد تاس زوج است یا فرد. اگر درست حدس بزنید، بر اساس مبلغ شرط‌بندی خود جایزه می‌گیرید.</li>
-                <li><strong>سیستم تعیین عدد:</strong> عدد دقیق تاس را حدس می‌زنید. اگر درست باشد، امتیازی که شرط بسته‌اید دو برابر می‌شود!</li>
-            </ul>
-        </section>
-        
-        <section class="card" data-aos="fade-left">
-            <h2>💸 سیستم انتقال امتیاز</h2>
-            <p>شما در روز میتوانید یکبار امتیاز خود را با استفاده از ایدی عددی فرد مورد نظر انتقال دهید.</p>
-            <div class="note">
-                <p><strong>نکته:</strong> بر اساس تعداد امتیاز مورد انتقال، مالیات از مبلغ کسر میشود.</p>
-            </div>
-        </section>
-
-        <section class="card" data-aos="fade-right">
-            <h2>⭐ سیستم استارز رایگان</h2>
-            <p>شما با پرداخت تعدادی امتیاز که در قسمت استارز ذکر شده میتوانید روی <strong>چنل</strong> خود استارز سفارش دهید.</p>
+            <h2 data-lang="stars_title"></h2>
+            <p data-lang="stars_desc"></p>
         </section>
 
         <section class="card" data-aos="fade-left">
-            <h2>🧸 سیستم گیفت رایگان (گیفت تدی)</h2>
-            <p>شما با پرداخت تعدادی امتیاز که در قسمت گیفت تدی ذکر شده میتوانید به روی اکانت خود گیفت تلگرام سفارش دهید.</p>
+            <h2 data-lang="gift_title"></h2>
+            <p data-lang="gift_desc"></p>
         </section>
 
         <section class="card" data-aos="fade-up">
-            <h2>📝 توضیحات تکمیلی</h2>
+            <h2 data-lang="additional_title"></h2>
              <ul>
-                <li>در قسمت استارز رایگان حتما باید لینک چنل یا پست ذکر شده باشد.</li>
-                <li>در قسمت گیفت تدی باید حتما ایدی تلگرام خود را در قالب متن گذاشته باشید.</li>
-                <li>اکثر اوقات در گپ اصلی ( @x7gap) کد هدیه قرار داده میشود که شما میتوانید بدین وسیله امتیاز خود را افزایش دهید.</li>
+                <li data-lang="additional_1"></li>
+                <li data-lang="additional_2"></li>
+                <li data-lang="additional_3"></li>
             </ul>
         </section>
 
         <section class="card" data-aos="zoom-in-up">
-            <h2>👑 قسمت کاربران ویژه (ممبرشیپ)</h2>
-            <p>شما با پرداخت هزینه، قابلیت‌هایی برای شما در ربات اضافه میشود که در زیر ذکر شده:</p>
+            <h2 data-lang="vip_title"></h2>
+            <p data-lang="vip_desc"></p>
             <ul>
-                <li>دریافت امتیاز روزانه هر روز ۲ بار بین ۱ تا ۷ امتیاز.</li>
-                <li>ساخت کد هدیه با کسر امتیاز.</li>
-                <li>دریافت ۴ امتیاز به ازای هر رفرال.</li>
-                <li>معاف شدن از مالیات انتقال امتیاز.</li>
-                <li>قابلیت انتقال امتیاز روزانه ۱۰ بار.</li>
-                <li>امکان استفاده از قسمت شرط بندی روزی ۱۰ بار.</li>
-                <li>کاهش قیمت امتیاز ربات به ۷۵۰ ریال به ازای هر امتیاز.</li>
-                <li>معاف شدن از کسر امتیاز هنگام لفت دادن رفرال.</li>
+                <li data-lang="vip_1"></li>
+                <li data-lang="vip_2"></li>
+                <li data-lang="vip_3"></li>
+                <li data-lang="vip_4"></li>
+                <li data-lang="vip_5"></li>
+                <li data-lang="vip_6"></li>
+                <li data-lang="vip_7"></li>
+                <li data-lang="vip_8"></li>
             </ul>
-            <h2>💰 قیمت ها</h2>
+            <h2 data-lang="pricing_title"></h2>
             <div class="price-grid">
-                <div class="price-item"><strong>اشتراک ماهانه</strong><span>300 امتیاز</span></div>
-                <div class="price-item"><strong>سه هفته</strong><span>260 امتیاز</span></div>
-                <div class="price-item"><strong>دو هفته</strong><span>220 امتیاز</span></div>
-                <div class="price-item"><strong>یک هفته</strong><span>180 امتیاز</span></div>
-                <div class="price-item"><strong>یک روزه</strong><span>50 امتیاز</span></div>
+                <div class="price-item"><strong data-lang="price_1_title"></strong><span data-lang="price_1_value"></span></div>
+                <div class="price-item"><strong data-lang="price_2_title"></strong><span data-lang="price_2_value"></span></div>
+                <div class="price-item"><strong data-lang="price_3_title"></strong><span data-lang="price_3_value"></span></div>
+                <div class="price-item"><strong data-lang="price_4_title"></strong><span data-lang="price_4_value"></span></div>
+                <div class="price-item"><strong data-lang="price_5_title"></strong><span data-lang="price_5_value"></span></div>
             </div>
         </section>
-
+        
+        <section class="card" data-aos="fade-up">
+            <h2 data-lang="ids_title"></h2>
+            <ul class="id-list">
+                <li><span data-lang="id_1_title"></span> <a href="https://t.me/x7likestar_bot" target="_blank">@x7likestar_bot</a></li>
+                <li><span data-lang="id_2_title"></span> <a href="https://t.me/npvpn1bot" target="_blank">@npvpn1bot</a></li>
+                <li><span data-lang="id_3_title"></span> <a href="https://t.me/x7gap" target="_blank">@x7gap</a></li>
+                <li><span data-lang="id_4_title"></span> <a href="https://t.me/npvpnir" target="_blank">@npvpnir</a></li>
+                <li><span data-lang="id_5_title"></span> <a href="https://t.me/immmdold" target="_blank">@immmdold</a></li>
+                <li><span data-lang="id_6_title"></span> <a href="https://t.me/likeadminx7" target="_blank">@likeadminx7</a></li>
+                <li><span data-lang="id_7_title"></span> <a href="https://t.me/npsupport" target="_blank">@npsupport</a></li>
+            </ul>
+        </section>
     </main>
-
+    
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.9.3/tsparticles.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    
     <script>
-        // --- فعال‌سازی کتابخانه انیمیشن AOS ---
-        AOS.init({
-            duration: 700, // سرعت انیمیشن بر حسب میلی‌ثانیه
-            once: true,    // انیمیشن فقط یک بار اجرا شود
-            offset: 50,    // انیمیشن کمی زودتر شروع شود
-        });
+        // --- DATA ---
+        const translations = {
+            fa: {
+                page_title: "به ربات ما خوش آمدید",
+                hero_title: "سلام، به مینی اپ ربات ما خوش اومدی✨",
+                about_title: "📄 توضیحات درباره ی ربات ما",
+                about_desc: "در این صفحه می‌توانید با تمام قابلیت‌ها، سیستم‌ها و قوانین ربات ما به طور کامل آشنا شوید.",
+                referral_title: "🤝 سیستم رفرال",
+                referral_1: "در ربات ما به ازای هر رفرال به شما 2 امتیاز افزوده میشود.",
+                referral_2: "به ازای هر رفرالی که رفرالتون بگیره 1 امتیاز به شما افزوده میشود.",
+                referral_3: "به ازای هر گیفتی که رفرالتون سفارش بده به شما 1 امتیاز افزوده میشود.",
+                referral_4: "به ازای هر ده روزی که رفرالتون از چنلای جوین اجباری لفت نده به شما 1 امتیاز افزوده میشود.",
+                note_title: "نکته:",
+                referral_note: "اگر رفرالتون از چنلای جوین اجباری لفت بده از شما 1 امتیاز کسر میشود. شما میتوانید لینک رفرال اختصاصی خود را از بخش /profile در منوی ربات بدست اورید.",
+                daily_title: "🎁 سیستم امتیاز روزانه",
+                daily_desc: "شما هر روز میتوانید یکبار از امتیاز روزانه استفاده کنید که به شما به طور اتفاقی بین 1 تا 5 امتیاز میدهد.",
+                bet_title: "🎲 سیستم شرط بندی",
+                bet_desc: "برای باز کردن دائمی سیستم شرط بندی باید 15 امتیاز بپردازید.",
+                bet_1_title: "سیستم زوج یا فرد:",
+                bet_1_desc: "تعیین می‌کنید عدد تاس زوج است یا فرد. اگر درست حدس بزنید، بر اساس مبلغ شرط‌بندی خود جایزه می‌گیرید.",
+                bet_2_title: "سیستم تعیین عدد:",
+                bet_2_desc: "عدد دقیق تاس را حدس می‌زنید. اگر درست باشد، امتیازی که شرط بسته‌اید دو برابر می‌شود!",
+                transfer_title: "💸 سیستم انتقال امتیاز",
+                transfer_desc: "شما در روز میتوانید یکبار امتیاز خود را با استفاده از ایدی عددی فرد مورد نظر انتقال دهید.",
+                transfer_note: "بر اساس تعداد امتیاز مورد انتقال مالیات انتقال کم میشود.",
+                stars_title: "⭐ سیستم استارز رایگان",
+                stars_desc: "شما با پرداخت تعدادی امتیاز که در قسمت استارز ذکر شده میتوانید روی چنل خود استارز سفارش دهید.",
+                gift_title: "🧸 سیستم گیفت رایگان (گیفت تدی)",
+                gift_desc: "شما با پرداخت تعدادی امتیاز که در قسمت گیفت تدی ذکر شده میتوانید به روی اکانت خود گیفت تلگرام سفارش دهید.",
+                additional_title: "📝 توضیحات تکمیلی",
+                additional_1: "در قسمت استارز رایگان حتما باید لینک چنل یا پست ذکر شده باشد.",
+                additional_2: "در قسمت گیفت تدی باید حتما ایدی تلگرام خود را در قالب متن گذاشته باشید.",
+                additional_3: "اکثر اوقات در گپ اصلی ( @x7gap) کد هدیه قرار داده میشود که شما میتوانید بدین وسیله امتیاز خود را افزایش دهید.",
+                vip_title: "👑 قسمت کاربران ویژه (ممبرشیپ)",
+                vip_desc: "شما با پرداخت هزینه قابلیت هایی برای شما در ربات اضافه میشود که در متن زیر ذکر شده:",
+                vip_1: "دریافت امتیاز روزانه هر روز ۲ بار بین ۱ تا ۷ امتیاز.",
+                vip_2: "ساخت کد هدیه با کسر امتیاز.",
+                vip_3: "دریافت ۴ امتیاز به ازای هر رفرال.",
+                vip_4: "معاف شدن از مالیات انتقال امتیاز.",
+                vip_5: "قابلیت انتقال امتیاز روزانه ۱۰ بار.",
+                vip_6: "امکان استفاده از قسمت شرط بندی روزی ۱۰ بار.",
+                vip_7: "کاهش قیمت امتیاز ربات به ۷۵۰ ریال به ازای هر امتیاز.",
+                vip_8: "معاف شدن از کسر امتیاز هنگام لفت دادن رفرال.",
+                pricing_title: "💰 قیمت ها",
+                price_1_title: "اشتراک ماهانه", price_1_value: "300 تومان",
+                price_2_title: "سه هفته اشتراک", price_2_value: "260 تومان",
+                price_3_title: "دو هفته اشتراک", price_3_value: "220 تومان",
+                price_4_title: "یک هفته اشتراک", price_4_value: "180 تومان",
+                price_5_title: "یک روزه", price_5_value: "50 تومان",
+                ids_title: "🔗 آیدی‌های مهم",
+                id_1_title: "ایدی ربات :",
+                id_2_title: "ایدی ربات دیگر :",
+                id_3_title: "ایدی گپ :",
+                id_4_title: "ایدی شاپ وی پی ان :",
+                id_5_title: "ایدی مالک :",
+                id_6_title: "ایدی ادمین :",
+                id_7_title: "ایدی ادمین وی پی ان :",
+            },
+            en: {
+                page_title: "Welcome to Our Bot",
+                hero_title: "Hello, Welcome to our bot's mini app ✨",
+                about_title: "📄 About Our Bot",
+                about_desc: "On this page, you can fully familiarize yourself with all the features, systems, and rules of our bot.",
+                referral_title: "🤝 Referral System",
+                referral_1: "You get 2 points for each referral in our bot.",
+                referral_2: "You get 1 point for each referral your referral gets.",
+                referral_3: "You get 1 point for each gift your referral orders.",
+                referral_4: "You get 1 point for every ten days your referral does not leave the mandatory join channels.",
+                note_title: "Note:",
+                referral_note: "If your referral leaves the mandatory join channels, 1 point will be deducted from you. You can get your exclusive referral link from the /profile section in the bot's menu.",
+                daily_title: "🎁 Daily Points System",
+                daily_desc: "You can use the daily points once a day, which randomly gives you between 1 to 5 points.",
+                bet_title: "🎲 Betting System",
+                bet_desc: "You must pay 15 points to permanently unlock the betting system.",
+                bet_1_title: "Odd or Even System:",
+                bet_1_desc: "You determine if the dice roll is odd or even. If you guess correctly, you get a prize based on your bet amount.",
+                bet_2_title: "Number Guessing System:",
+                bet_2_desc: "You guess the exact number of the dice. If correct, the points you bet are doubled!",
+                transfer_title: "💸 Point Transfer System",
+                transfer_desc: "You can transfer your points once a day using the numerical ID of the target person.",
+                transfer_note: "A transfer tax is deducted based on the number of points transferred.",
+                stars_title: "⭐ Free Stars System",
+                stars_desc: "By paying a certain number of points mentioned in the Stars section, you can order stars for your channel.",
+                gift_title: "🧸 Free Gift System (Teddy Gift)",
+                gift_desc: "By paying a certain number of points mentioned in the Teddy Gift section, you can order a Telegram gift for your account.",
+                additional_title: "📝 Additional Information",
+                additional_1: "In the Free Stars section, the channel or post link must be mentioned.",
+                additional_2: "In the Teddy Gift section, you must provide your Telegram ID in text format.",
+                additional_3: "Gift codes are often posted in the main group (@x7gap), which you can use to increase your points.",
+                vip_title: "👑 VIP Members Section (Membership)",
+                vip_desc: "By paying a fee, features will be added to the bot for you, as listed below:",
+                vip_1: "Receive daily points twice a day, between 1 to 7 points.",
+                vip_2: "Create gift codes by deducting points.",
+                vip_3: "Receive 4 points for each referral.",
+                vip_4: "Exemption from point transfer tax.",
+                vip_5: "Ability to transfer points 10 times daily.",
+                vip_6: "Ability to use the betting section 10 times daily.",
+                vip_7: "Bot point price reduced to 750 Rials per point.",
+                vip_8: "Exemption from point deduction when your referrals leave channels.",
+                pricing_title: "💰 Prices",
+                price_1_title: "Monthly Subscription", price_1_value: "300 Toman",
+                price_2_title: "Three Weeks", price_2_value: "260 Toman",
+                price_3_title: "Two Weeks", price_3_value: "220 Toman",
+                price_4_title: "One Week", price_4_value: "180 Toman",
+                price_5_title: "One Day", price_5_value: "50 Toman",
+                ids_title: "🔗 Important IDs",
+                id_1_title: "Bot ID:",
+                id_2_title: "Other Bot ID:",
+                id_3_title: "Group ID:",
+                id_4_title: "VPN Shop ID:",
+                id_5_title: "Owner ID:",
+                id_6_title: "Admin ID:",
+                id_7_title: "VPN Admin ID:",
+            },
+            es: {
+                page_title: "Bienvenido a Nuestro Bot",
+                hero_title: "Hola, bienvenido a la mini app de nuestro bot ✨",
+                about_title: "📄 Sobre Nuestro Bot",
+                about_desc: "En esta página, puede familiarizarse completamente con todas las características, sistemas y reglas de nuestro bot.",
+                referral_title: "🤝 Sistema de Referidos",
+                referral_1: "Obtienes 2 puntos por cada referido en nuestro bot.",
+                referral_2: "Obtienes 1 punto por cada referido que obtenga tu referido.",
+                referral_3: "Obtienes 1 punto por cada regalo que ordene tu referido.",
+                referral_4: "Obtienes 1 punto por cada diez días que tu referido no abandone los canales de unión obligatoria.",
+                note_title: "Nota:",
+                referral_note: "Si tu referido abandona los canales de unión obligatoria, se te deducirá 1 punto. Puedes obtener tu enlace de referido exclusivo en la sección /profile del menú del bot.",
+                daily_title: "🎁 Sistema de Puntos Diarios",
+                daily_desc: "Puedes usar los puntos diarios una vez al día, lo que te da aleatoriamente entre 1 y 5 puntos.",
+                bet_title: "🎲 Sistema de Apuestas",
+                bet_desc: "Debes pagar 15 puntos para desbloquear permanentemente el sistema de apuestas.",
+                bet_1_title: "Sistema Par o Impar:",
+                bet_1_desc: "Determinas si el dado es par o impar. Si aciertas, obtienes un premio basado en tu apuesta.",
+                bet_2_title: "Sistema de Adivinar Número:",
+                bet_2_desc: "Adivinas el número exacto del dado. ¡Si aciertas, los puntos que apostaste se duplican!",
+                transfer_title: "💸 Sistema de Transferencia de Puntos",
+                transfer_desc: "Puedes transferir tus puntos una vez al día usando el ID numérico de la persona.",
+                transfer_note: "Se deduce un impuesto de transferencia basado en la cantidad de puntos transferidos.",
+                stars_title: "⭐ Sistema de Estrellas Gratis",
+                stars_desc: "Pagando una cierta cantidad de puntos mencionados en la sección de Estrellas, puedes ordenar estrellas para tu canal.",
+                gift_title: "🧸 Sistema de Regalos Gratis (Regalo Teddy)",
+                gift_desc: "Pagando una cierta cantidad de puntos mencionados en la sección de Regalo Teddy, puedes ordenar un regalo de Telegram para tu cuenta.",
+                additional_title: "📝 Información Adicional",
+                additional_1: "En la sección de Estrellas Gratis, se debe mencionar el enlace del canal o la publicación.",
+                additional_2: "En la sección de Regalo Teddy, debes proporcionar tu ID de Telegram en formato de texto.",
+                additional_3: "A menudo se publican códigos de regalo en el grupo principal (@x7gap), que puedes usar para aumentar tus puntos.",
+                vip_title: "👑 Sección de Miembros VIP (Membresía)",
+                vip_desc: "Pagando una tarifa, se agregarán características al bot para ti, como se detalla a continuación:",
+                vip_1: "Recibe puntos diarios dos veces al día, entre 1 y 7 puntos.",
+                vip_2: "Crea códigos de regalo deduciendo puntos.",
+                vip_3: "Recibe 4 puntos por cada referido.",
+                vip_4: "Exención del impuesto de transferencia de puntos.",
+                vip_5: "Posibilidad de transferir puntos 10 veces al día.",
+                vip_6: "Posibilidad de usar la sección de apuestas 10 veces al día.",
+                vip_7: "Precio de los puntos del bot reducido a 750 Riales por punto.",
+                vip_8: "Exención de la deducción de puntos cuando tus referidos abandonan los canales.",
+                pricing_title: "💰 Precios",
+                price_1_title: "Suscripción Mensual", price_1_value: "300 Toman",
+                price_2_title: "Tres Semanas", price_2_value: "260 Toman",
+                price_3_title: "Dos Semanas", price_3_value: "220 Toman",
+                price_4_title: "Una Semana", price_4_value: "180 Toman",
+                price_5_title: "Un Día", price_5_value: "50 Toman",
+                ids_title: "🔗 IDs Importantes",
+                id_1_title: "ID del Bot:",
+                id_2_title: "ID de Otro Bot:",
+                id_3_title: "ID del Grupo:",
+                id_4_title: "ID de la Tienda VPN:",
+                id_5_title: "ID del Dueño:",
+                id_6_title: "ID del Admin:",
+                id_7_title: "ID del Admin VPN:",
+            },
+            ru: {
+                page_title: "Добро пожаловать в нашего бота",
+                hero_title: "Привет, добро пожаловать в мини-приложение нашего бота ✨",
+                about_title: "📄 О нашем боте",
+                about_desc: "На этой странице вы можете полностью ознакомиться со всеми функциями, системами и правилами нашего бота.",
+                referral_title: "🤝 Реферальная система",
+                referral_1: "Вы получаете 2 очка за каждого реферала в нашем боте.",
+                referral_2: "Вы получаете 1 очко за каждого реферала, которого привлечет ваш реферал.",
+                referral_3: "Вы получаете 1 очко за каждый подарок, который закажет ваш реферал.",
+                referral_4: "Вы получаете 1 очко за каждые десять дней, которые ваш реферал не покидает обязательные каналы.",
+                note_title: "Примечание:",
+                referral_note: "Если ваш реферал покинет обязательные каналы, с вас будет списано 1 очко. Вы можете получить свою эксклюзивную реферальную ссылку в разделе /profile в меню бота.",
+                daily_title: "🎁 Ежедневная система очков",
+                daily_desc: "Вы можете использовать ежедневные очки один раз в день, что случайным образом дает вам от 1 до 5 очков.",
+                bet_title: "🎲 Система ставок",
+                bet_desc: "Вы должны заплатить 15 очков, чтобы навсегда разблокировать систему ставок.",
+                bet_1_title: "Система «Чет или нечет»:",
+                bet_1_desc: "Вы определяете, выпадет ли на костях четное или нечетное число. Если вы угадаете правильно, вы получите приз в зависимости от суммы вашей ставки.",
+                bet_2_title: "Система угадывания числа:",
+                bet_2_desc: "Вы угадываете точное число на костях. Если угадаете, поставленные вами очки удваиваются!",
+                transfer_title: "💸 Система перевода очков",
+                transfer_desc: "Вы можете переводить свои очки один раз в день, используя числовой ID человека.",
+                transfer_note: "Налог на перевод взимается в зависимости от количества переводимых очков.",
+                stars_title: "⭐ Система бесплатных звезд",
+                stars_desc: "Заплатив определенное количество очков, указанное в разделе «Звезды», вы можете заказать звезды для своего канала.",
+                gift_title: "🧸 Система бесплатных подарков (Подарок Тедди)",
+                gift_desc: "Заплатив определенное количество очков, указанное в разделе «Подарок Тедди», вы можете заказать подарок Telegram для своего аккаунта.",
+                additional_title: "📝 Дополнительная информация",
+                additional_1: "В разделе «Бесплатные звезды» должна быть указана ссылка на канал или пост.",
+                additional_2: "В разделе «Подарок Тедди» вы должны указать свой ID в Telegram в текстовом формате.",
+                additional_3: "Подарочные коды часто публикуются в основной группе (@x7gap), которые вы можете использовать для увеличения своих очков.",
+                vip_title: "👑 Раздел VIP-пользователей (Членство)",
+                vip_desc: "За плату вам будут добавлены функции в боте, как указано ниже:",
+                vip_1: "Получайте ежедневные очки дважды в день, от 1 до 7 очков.",
+                vip_2: "Создавайте подарочные коды, вычитая очки.",
+                vip_3: "Получайте 4 очка за каждого реферала.",
+                vip_4: "Освобождение от налога на перевод очков.",
+                vip_5: "Возможность переводить очки 10 раз в день.",
+                vip_6: "Возможность использовать раздел ставок 10 раз в день.",
+                vip_7: "Цена очков бота снижена до 750 риалов за очко.",
+                vip_8: "Освобождение от списания очков, когда ваши рефералы покидают каналы.",
+                pricing_title: "💰 Цены",
+                price_1_title: "Месячная подписка", price_1_value: "300 Томан",
+                price_2_title: "Три недели", price_2_value: "260 Томан",
+                price_3_title: "Две недели", price_3_value: "220 Томан",
+                price_4_title: "Одна неделя", price_4_value: "180 Томан",
+                price_5_title: "Один день", price_5_value: "50 Томан",
+                ids_title: "🔗 Важные ID",
+                id_1_title: "ID бота:",
+                id_2_title: "ID другого бота:",
+                id_3_title: "ID группы:",
+                id_4_title: "ID магазина VPN:",
+                id_5_title: "ID владельца:",
+                id_6_title: "ID администратора:",
+                id_7_title: "ID администратора VPN:",
+            },
+            hi: {
+                page_title: "हमारे बॉट में आपका स्वागत है",
+                hero_title: "नमस्ते, हमारे बॉट के मिनी ऐप में आपका स्वागत है ✨",
+                about_title: "📄 हमारे बॉट के बारे में",
+                about_desc: "इस पृष्ठ पर, आप हमारे बॉट की सभी सुविधाओं, प्रणालियों और नियमों से पूरी तरह परिचित हो सकते हैं।",
+                referral_title: "🤝 रेफरल सिस्टम",
+                referral_1: "हमारे बॉट में प्रत्येक रेफरल के लिए आपको 2 अंक मिलते हैं।",
+                referral_2: "आपके रेफरल द्वारा प्राप्त प्रत्येक रेफरल के लिए आपको 1 अंक मिलता है।",
+                referral_3: "आपके रेफरल द्वारा ऑर्डर किए गए प्रत्येक उपहार के लिए आपको 1 अंक मिलता है।",
+                referral_4: "आपके रेफरल द्वारा अनिवार्य जॉइन चैनलों को नहीं छोड़ने पर हर दस दिन में आपको 1 अंक मिलता है।",
+                note_title: "ध्यान दें:",
+                referral_note: "यदि आपका रेफरल अनिवार्य जॉइन चैनलों को छोड़ देता है, तो आपसे 1 अंक काट लिया जाएगा। आप बॉट के मेनू में /profile अनुभाग से अपना विशेष रेफरल लिंक प्राप्त कर सकते हैं।",
+                daily_title: "🎁 दैनिक अंक प्रणाली",
+                daily_desc: "आप दिन में एक बार दैनिक अंकों का उपयोग कर सकते हैं, जो आपको बेतरतीब ढंग से 1 से 5 अंक देता है।",
+                bet_title: "🎲 सट्टेबाजी प्रणाली",
+                bet_desc: "सट्टेबाजी प्रणाली को स्थायी रूप से अनलॉक करने के लिए आपको 15 अंक देने होंगे।",
+                bet_1_title: "सम या विषम प्रणाली:",
+                bet_1_desc: "आप यह निर्धारित करते हैं कि पासा सम है या विषम। यदि आप सही अनुमान लगाते हैं, तो आपको अपनी शर्त राशि के आधार पर पुरस्कार मिलता है।",
+                bet_2_title: "संख्या अनुमान प्रणाली:",
+                bet_2_desc: "आप पासे की सटीक संख्या का अनुमान लगाते हैं। यदि सही है, तो आपके द्वारा लगाए गए अंक दोगुने हो जाते हैं!",
+                transfer_title: "💸 अंक हस्तांतरण प्रणाली",
+                transfer_desc: "आप लक्षित व्यक्ति की संख्यात्मक आईडी का उपयोग करके दिन में एक बार अपने अंक स्थानांतरित कर सकते हैं।",
+                transfer_note: "हस्तांतरित अंकों की संख्या के आधार पर एक हस्तांतरण कर काटा जाता है।",
+                stars_title: "⭐ मुफ्त सितारे प्रणाली",
+                stars_desc: "सितारे अनुभाग में उल्लिखित अंकों की एक निश्चित संख्या का भुगतान करके, आप अपने चैनल के लिए सितारे ऑर्डर कर सकते हैं।",
+                gift_title: "🧸 मुफ्त उपहार प्रणाली (टेडी उपहार)",
+                gift_desc: "टेडी उपहार अनुभाग में उल्लिखित अंकों की एक निश्चित संख्या का भुगतान करके, आप अपने खाते के लिए एक टेलीग्राम उपहार ऑर्डर कर सकते हैं।",
+                additional_title: "📝 अतिरिक्त जानकारी",
+                additional_1: "मुफ्त सितारे अनुभाग में, चैनल या पोस्ट लिंक का उल्लेख किया जाना चाहिए।",
+                additional_2: "टेडी उपहार अनुभाग में, आपको अपनी टेलीग्राम आईडी टेक्स्ट प्रारूप में प्रदान करनी होगी।",
+                additional_3: "उपहार कोड अक्सर मुख्य समूह (@x7gap) में पोस्ट किए जाते हैं, जिनका उपयोग आप अपने अंक बढ़ाने के लिए कर सकते हैं।",
+                vip_title: "👑 वीआईपी सदस्य अनुभाग (सदस्यता)",
+                vip_desc: "शुल्क का भुगतान करके, आपके लिए बॉट में सुविधाएँ जोड़ी जाएंगी, जैसा कि नीचे सूचीबद्ध है:",
+                vip_1: "दिन में दो बार 1 से 7 अंकों के बीच दैनिक अंक प्राप्त करें।",
+                vip_2: "अंक काटकर उपहार कोड बनाएं।",
+                vip_3: "प्रत्येक रेफरल के लिए 4 अंक प्राप्त करें।",
+                vip_4: "अंक हस्तांतरण कर से छूट।",
+                vip_5: "प्रतिदिन 10 बार अंक स्थानांतरित करने की क्षमता।",
+                vip_6: "प्रतिदिन 10 बार सट्टेबाजी अनुभाग का उपयोग करने की क्षमता।",
+                vip_7: "बॉट अंक की कीमत प्रति अंक 750 रियाल तक कम हो गई।",
+                vip_8: "जब आपके रेफरल चैनल छोड़ते हैं तो अंक कटौती से छूट।",
+                pricing_title: "💰 कीमतें",
+                price_1_title: "मासिक सदस्यता", price_1_value: "300 तोमान",
+                price_2_title: "तीन सप्ताह", price_2_value: "260 तोमान",
+                price_3_title: "दो सप्ताह", price_3_value: "220 तोमान",
+                price_4_title: "एक सप्ताह", price_4_value: "180 तोमान",
+                price_5_title: "एक दिन", price_5_value: "50 तोमान",
+                ids_title: "🔗 महत्वपूर्ण आईडी",
+                id_1_title: "बॉट आईडी:",
+                id_2_title: "अन्य बॉट आईडी:",
+                id_3_title: "समूह आईडी:",
+                id_4_title: "वीपीएन शॉप आईडी:",
+                id_5_title: "मालिक आईडी:",
+                id_6_title: "व्यवस्थापक आईडी:",
+                id_7_title: "वीपीएन व्यवस्थापक आईडी:",
+            },
+            ar: {
+                page_title: "أهلاً بك في بوتنا",
+                hero_title: "مرحباً، أهلاً بك في التطبيق المصغر لبوتنا ✨",
+                about_title: "📄 حول بوتنا",
+                about_desc: "في هذه الصفحة، يمكنك التعرف بشكل كامل على جميع ميزات وأنظمة وقواعد بوتنا.",
+                referral_title: "🤝 نظام الإحالة",
+                referral_1: "تحصل على نقطتين لكل إحالة في بوتنا.",
+                referral_2: "تحصل على نقطة واحدة لكل إحالة يحصل عليها الشخص الذي أحلتَه.",
+                referral_3: "تحصل على نقطة واحدة لكل هدية يطلبها الشخص الذي أحلتَه.",
+                referral_4: "تحصل على نقطة واحدة كل عشرة أيام لا يغادر فيها الشخص الذي أحلتَه قنوات الانضمام الإجباري.",
+                note_title: "ملاحظة:",
+                referral_note: "إذا غادر الشخص الذي أحلتَه قنوات الانضمام الإجباري، سيتم خصم نقطة واحدة منك. يمكنك الحصول على رابط الإحالة الحصري الخاص بك من قسم /profile في قائمة البوت.",
+                daily_title: "🎁 نظام النقاط اليومية",
+                daily_desc: "يمكنك استخدام النقاط اليومية مرة واحدة في اليوم، والتي تمنحك بشكل عشوائي ما بين 1 إلى 5 نقاط.",
+                bet_title: "🎲 نظام الرهان",
+                bet_desc: "يجب عليك دفع 15 نقطة لفتح نظام الرهان بشكل دائم.",
+                bet_1_title: "نظام الفردي أو الزوجي:",
+                bet_1_desc: "تحدد ما إذا كان رقم النرد فرديًا أم زوجيًا. إذا خمنت بشكل صحيح، ستحصل على جائزة بناءً على مبلغ رهانك.",
+                bet_2_title: "نظام تخمين الرقم:",
+                bet_2_desc: "تخمن الرقم الدقيق للنرد. إذا كان صحيحًا، تتضاعف النقاط التي راهنت بها!",
+                transfer_title: "💸 نظام تحويل النقاط",
+                transfer_desc: "يمكنك تحويل نقاطك مرة واحدة في اليوم باستخدام المعرف الرقمي للشخص المستهدف.",
+                transfer_note: "يتم خصم ضريبة تحويل بناءً على عدد النقاط المحولة.",
+                stars_title: "⭐ نظام النجوم المجانية",
+                stars_desc: "بدفع عدد معين من النقاط المذكورة في قسم النجوم، يمكنك طلب نجوم لقناتك.",
+                gift_title: "🧸 نظام الهدايا المجانية (هدية تيدي)",
+                gift_desc: "بدفع عدد معين من النقاط المذكورة في قسم هدية تيدي، يمكنك طلب هدية تيليجرام لحسابك.",
+                additional_title: "📝 معلومات إضافية",
+                additional_1: "في قسم النجوم المجانية، يجب ذكر رابط القناة أو المنشور.",
+                additional_2: "في قسم هدية تيدي، يجب عليك تقديم معرف تيليجرام الخاص بك في شكل نص.",
+                additional_3: "غالبًا ما يتم نشر أكواد الهدايا في المجموعة الرئيسية (@x7gap)، والتي يمكنك استخدامها لزيادة نقاطك.",
+                vip_title: "👑 قسم الأعضاء المميزين (عضوية)",
+                vip_desc: "بدفع رسوم، ستتم إضافة ميزات إلى البوت لك، كما هو موضح أدناه:",
+                vip_1: "احصل على نقاط يومية مرتين في اليوم، ما بين 1 إلى 7 نقاط.",
+                vip_2: "أنشئ أكواد هدايا عن طريق خصم النقاط.",
+                vip_3: "احصل على 4 نقاط لكل إحالة.",
+                vip_4: "الإعفاء من ضريبة تحويل النقاط.",
+                vip_5: "القدرة على تحويل النقاط 10 مرات يوميًا.",
+                vip_6: "القدرة على استخدام قسم الرهان 10 مرات يوميًا.",
+                vip_7: "تخفيض سعر نقطة البوت إلى 750 ريال لكل نقطة.",
+                vip_8: "الإعفاء من خصم النقاط عندما تغادر إحالاتك القنوات.",
+                pricing_title: "💰 الأسعار",
+                price_1_title: "اشتراك شهري", price_1_value: "300 تومان",
+                price_2_title: "ثلاثة أسابيع", price_2_value: "260 تومان",
+                price_3_title: "أسبوعان", price_3_value: "220 تومان",
+                price_4_title: "أسبوع واحد", price_4_value: "180 تومان",
+                price_5_title: "يوم واحد", price_5_value: "50 تومان",
+                ids_title: "🔗 المعرفات الهامة",
+                id_1_title: "معرف البوت:",
+                id_2_title: "معرف بوت آخر:",
+                id_3_title: "معرف المجموعة:",
+                id_4_title: "معرف متجر VPN:",
+                id_5_title: "معرف المالك:",
+                id_6_title: "معرف المشرف:",
+                id_7_title: "معرف مشرف VPN:",
+            },
+        };
 
-        // --- منطق تغییر تم ---
-        const themeSwitch = document.getElementById('checkbox');
-        themeSwitch.addEventListener('change', function () {
-            document.body.classList.toggle('dark-mode');
-        });
+        // --- FUNCTIONS & LOGIC ---
+        function changeLanguage(lang) {
+            document.documentElement.lang = lang;
+            document.documentElement.dir = ['fa', 'ar'].includes(lang) ? 'rtl' : 'ltr';
+            
+            document.querySelectorAll('[data-lang]').forEach(element => {
+                const key = element.getAttribute('data-lang');
+                if (translations[lang] && translations[lang][key]) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- EVENT LISTENERS ---
+            const themeSwitch = document.getElementById('checkbox');
+            const langSwitcher = document.getElementById('lang-switcher');
 
-        // --- اعلام آمادگی به تلگرام ---
-        Telegram.WebApp.ready();
+            themeSwitch.addEventListener('change', (e) => {
+                document.body.classList.toggle('dark-mode', e.target.checked);
+                tsParticles.load("tsparticles", {
+                    background: { color: { value: document.body.classList.contains('dark-mode') ? '#0d1117' : '#f5f7fa' } }
+                });
+            });
+            
+            langSwitcher.addEventListener('change', (e) => {
+                changeLanguage(e.target.value);
+            });
+            
+            document.addEventListener('mousemove', e => {
+                document.body.style.setProperty('--x', e.clientX + 'px');
+                document.body.style.setProperty('--y', e.clientY + 'px');
+            });
+
+            // --- INITIALIZATIONS ---
+            AOS.init({ duration: 800, once: true, offset: 50 });
+
+            tsParticles.load("tsparticles", {
+                fpsLimit: 60,
+                background: { color: { value: '#0d1117' } },
+                particles: {
+                    number: { value: 60, density: { enable: true, value_area: 800 } },
+                    color: { value: "#ffffff" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.5, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false } },
+                    size: { value: 2, random: true, anim: { enable: false } },
+                    line_linked: { enable: true, distance: 150, color: "#ffffff", opacity: 0.4, width: 1 },
+                    move: { enable: true, speed: 1, direction: "none", random: false, straight: false, out_mode: "out", attract: { enable: false } }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: { onhover: { enable: true, mode: "grab" }, resize: true },
+                    modes: { grab: { distance: 140, line_opacity: 1 } }
+                },
+                detectRetina: true
+            });
+
+            changeLanguage('fa'); // Set default language to Persian
+            Telegram.WebApp.ready();
+        });
     </script>
 </body>
 </html>
